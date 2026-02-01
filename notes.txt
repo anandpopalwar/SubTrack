@@ -1,0 +1,48 @@
+What we learned till now
+
+Router in express js
+  inside routes folder 
+    create route for diff api route 
+    eg.
+      user user.route.js
+      subscription subscription.route.js
+
+multiple .env files 
+  1. for developement
+  2. for production
+
+How to use variable of all .env file depending upon mode of project
+  using dotenv file and configuring path of files (production or developement)
+   depending on the NODE_ENV variable
+
+How to connect out App to Database (mongodb nosql)
+    to Mongodb db we make connection and created 
+        the cluster to store db records
+    and user mongoose ORM to write easy db integration  
+
+
+How to create Database Modals
+    inside Modals folder 
+    create Schema in modal.js file of it w respective name 
+    and in Schema how to write pre and post Schema integration (middleware)
+    eg.
+      user modal.user.js
+      subscription modal.subscription.js
+
+How to create custom middleware
+    inside Middleware folder 
+    create middleware file with respective name
+    inside that we write middleware logic
+    middleware function have 4 parameters 
+      (err,req,res,next) =>{
+          err -> previous step
+          req -> request data
+          res -> response from previous step
+          next -> to execute next process after this middleware process is done
+      } 
+    middleware runs in this sequence 
+    request -> middleware (can be multiple) -> controller (actual code logic) -> response 
+    to use middleware in our app we write 
+    app.use(customMiddleware)
+
+ 
