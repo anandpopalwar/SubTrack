@@ -27,7 +27,6 @@ const userSchema = new Schema(
         "Password is not Valid",
       ],
       minLength: 8,
-      maxLength: 50,
       select: false, // password won’t come in queries by default
     },
   },
