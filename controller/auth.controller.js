@@ -1,12 +1,15 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 import User from "../modals/user.modal.js";
+import jwt from "jsonwebtoken";
+import { JWT_SECRET, JWT_EXPIRE_IN } from "../config/env.js";
 
-export const SignIn = async (req, res, next) => {
-  console.log(req);
-  //   console.log(res);
-  //   console.log(next);
+// Start Session
+// Start Transaction
+// Commit Transaction or Abort Transaction
+// End Session
 
+export const Register = async (req, res, next) => {
   // create a session
   const session = await mongoose.startSession();
 
@@ -70,7 +73,66 @@ export const SignIn = async (req, res, next) => {
   }
 };
 
-// Start Session
-// Start Transaction
-// Commit Transaction or Abort Transaction
-// End Session
+export const Login = async (req, res, next) => {
+  const { first, password } = req.body;
+  console.log(first, password);
+
+  try {
+    if (!first || !password) {
+      let error = new Error("Feilds are empty please fill it");
+      error.statusCode = 400;
+      throw error;
+    }
+
+    let dbUser = undefined;
+
+    if (/^\S+@\S+\.\S+$/.test(first)) {
+      dbUser = await User.findOne({
+        email: first,
+      }).select("+password");
+    } else {
+      dbUser = await User.findOne({
+        name: first,
+      }).select("+password");
+    }
+
+    if (!dbUser) {
+      let error = new Error("User is does not exist");
+      error.statusCode = 400;
+      throw error;
+    }
+    const isPasswordMatched = await bcrypt.compare(password, dbUser.password);
+    console.log({ isPasswordMatched });
+
+    if (!isPasswordMatched) {
+      let error = new Error("Password is invalid");
+      error.statusCode = 400;
+      throw error;
+    }
+
+    const token = jwt.sign(
+      {
+        userId: dbUser._id,
+      },
+      JWT_SECRET,
+      {
+        expiresIn: JWT_EXPIRE_IN,
+      },
+    );
+
+    console.log("Token", token);
+
+    res.status(200).json({
+      success: true,
+      message: "Login successfull",
+      data: {
+        token,
+        name: dbUser.name,
+        email: dbUser.email,
+      },
+    });
+  } catch (err) {
+    console.log(err);
+    next(err);
+  }
+};
