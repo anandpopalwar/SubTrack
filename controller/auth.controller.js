@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
-import User from "../modals/user.modal.js";
+import UserModal from "../modals/user.modal.js";
 import jwt from "jsonwebtoken";
 import { JWT_SECRET, JWT_EXPIRE_IN } from "../config/env.js";
 
@@ -22,7 +22,7 @@ export const Register = async (req, res, next) => {
     console.log(name, email, password);
 
     // checking if user exist or not
-    const existing = await User.exists({ email });
+    const existing = await UserModal.exists({ email });
     if (existing) {
       // if exist throw error and let error handler do it
       let error = new Error("User already exist");
@@ -38,7 +38,7 @@ export const Register = async (req, res, next) => {
     console.log(HashedPassword, "HashedPassword");
 
     //create a user with session as a parameter
-    const users = await User.create(
+    const users = await UserModal.create(
       [
         {
           name,
@@ -87,11 +87,11 @@ export const Login = async (req, res, next) => {
     let dbUser = undefined;
 
     if (/^\S+@\S+\.\S+$/.test(first)) {
-      dbUser = await User.findOne({
+      dbUser = await UserModal.findOne({
         email: first,
       }).select("+password");
     } else {
-      dbUser = await User.findOne({
+      dbUser = await UserModal.findOne({
         name: first,
       }).select("+password");
     }
@@ -110,9 +110,13 @@ export const Login = async (req, res, next) => {
       throw error;
     }
 
+    console.log(dbUser);
+
     const token = jwt.sign(
       {
         userId: dbUser._id,
+        name: dbUser.name,
+        admin: true,
       },
       JWT_SECRET,
       {
@@ -127,8 +131,11 @@ export const Login = async (req, res, next) => {
       message: "Login successfull",
       data: {
         token,
-        name: dbUser.name,
-        email: dbUser.email,
+        user: {
+          name: dbUser.name,
+          email: dbUser.email,
+          id: dbUser._id,
+        },
       },
     });
   } catch (err) {
