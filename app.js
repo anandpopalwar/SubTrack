@@ -1,4 +1,4 @@
-import { DB_URI, NODE_ENV, PORT } from "./config/env.js";
+import "./config/env.js";
 import express from "express";
 import cookieParser from "cookie-parser";
 import userRouter from "./routes/users.routes.js";
@@ -7,6 +7,9 @@ import authRouter from "./routes/auth.routes.js";
 import connectToDatabase from "./database/mongodb.js";
 import errorMiddleware from "./middlewares/error.middleware.js";
 import arcjetmiddleware from "./middlewares/arcjet.middleware.js";
+
+import { DB_URI, NODE_ENV, PORT } from "./config/env.js";
+console.log({ NODE_ENV });
 
 const app = express();
 
