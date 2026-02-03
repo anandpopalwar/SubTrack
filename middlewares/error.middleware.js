@@ -31,6 +31,7 @@ const errorMiddleware = (err, req, res, next) => {
       success: false,
       error: err.message || "Internal server error",
     });
+
   } catch (error) {
     next(error);
   }
