@@ -10,6 +10,8 @@ import arcjetmiddleware from "./middlewares/arcjet.middleware.js";
 
 const app = express();
 
+app.set("trust proxy", 1);
+
 app.use(express.json());
 app.use(
   express.urlencoded({
@@ -17,7 +19,15 @@ app.use(
   }),
 );
 app.use(cookieParser());
-app.use(arcjetmiddleware);
+app.use("/api", arcjetmiddleware);
+
+app.get("/health", (req, res) => {
+  res.status(200).json({
+    status: "ok",
+    env: NODE_ENV,
+    uptime: process.uptime(),
+  });
+});
 
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", userRouter);
@@ -29,9 +39,18 @@ app.get("/", (req, res) => {
   res.send("Hello Server is Running " + NODE_ENV + PORT);
 });
 
-app.listen(PORT, async () => {
-  console.log("Server Running on http://localhost:" + PORT);
+const startServer = async () => {
+  try {
+    await connectToDatabase(DB_URI);
+    console.log("Database connected");
 
-  console.log("making connection to db at " + NODE_ENV + " mode");
-  await connectToDatabase(DB_URI);
-});
+    app.listen(PORT, () => {
+      console.log(`Server running in ${NODE_ENV} on port ${PORT}`);
+    });
+  } catch (error) {
+    console.error("Failed to start server:", error);
+    process.exit(1);
+  }
+};
+
+startServer();

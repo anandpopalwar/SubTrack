@@ -7,7 +7,9 @@ const authorizeMiddleware = async (req, res, next) => {
       headers: { authorization },
       params: { id },
     } = req;
+
     console.log({ id });
+
     if (!authorization) {
       let _err = new Error("Token not found, please login");
       _err.statusCode = 404;
@@ -24,6 +26,8 @@ const authorizeMiddleware = async (req, res, next) => {
       _err.statusCode = 401;
       throw _err;
     }
+
+    req.user = rawUserData;
 
     next();
   } catch (err) {
