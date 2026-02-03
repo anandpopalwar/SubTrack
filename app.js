@@ -1,6 +1,8 @@
 import "./config/env.js";
 import express from "express";
 import cookieParser from "cookie-parser";
+import cors from "cors";
+
 import userRouter from "./routes/users.routes.js";
 import subscriptionRouter from "./routes/subscription.routes.js";
 import authRouter from "./routes/auth.routes.js";
@@ -8,12 +10,19 @@ import connectToDatabase from "./database/mongodb.js";
 import errorMiddleware from "./middlewares/error.middleware.js";
 import arcjetmiddleware from "./middlewares/arcjet.middleware.js";
 
-import { DB_URI, NODE_ENV, PORT } from "./config/env.js";
+import { DB_URI, NODE_ENV, PORT,CLIENT_URL } from "./config/env.js";
 console.log({ NODE_ENV });
 
 const app = express();
 
 app.set("trust proxy", 1);
+// 1️⃣ CORS — FIRST
+app.use(
+  cors({
+    origin: CLIENT_URL,
+    credentials: true,
+  }),
+);
 
 app.use(express.json());
 app.use(
