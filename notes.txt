@@ -46,7 +46,6 @@ How to create custom middleware
     app.use(customMiddleware)
 
 Authetication flow
-  Part A)
           1) Register user
               check if user is present or not and if not then  
                   -> create user in db with hashed password 
@@ -63,7 +62,7 @@ Authetication flow
                     and send jwt token sign in token
                   : jwt.sign({user_obj},jwt_secret,{expireIn:timer})
                   if not then say user is not present in db
-  Part B)
+Autherization flow
           1) send jwt accessToken in Auth = Bearer token from client to req header
           2) When we make api call we want only valid user to get the data
               So we will add a middleware in between private apis to check if
